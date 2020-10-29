@@ -1,8 +1,12 @@
 #pragma once
 
 #include "Globals.h"
-
-#define SPEAKER_DEVICE_MAX_CHANNELS               2       // Max Channels.
+// NOTE(will): These "MAX_CHANNELS" values do not seem to make a difference
+// We are able to declare surround sound device formats without them and
+// applications (Audacity) are able to open the device in multichannel
+// even though the following values are all 2 (which should just be stereo)
+// QUESTION: What is the point of MAX_CHANNELS?
+#define SPEAKER_DEVICE_MAX_CHANNELS                 2       // Max Channels.
 
 #define SPEAKER_MAX_INPUT_SYSTEM_STREAMS            1
 #define SPEAKER_MAX_INPUT_OFFLOAD_STREAMS           0
@@ -20,6 +24,14 @@
 #define SPEAKER_OFFLOAD_MIN_SAMPLE_RATE             44100   // Min Sample Rate
 #define SPEAKER_OFFLOAD_MAX_SAMPLE_RATE             44100   // Max Sample Rate
 
+// NOTE(will): the following is very finicky and I have yet to find any
+// documentation that explains the quirkiness.
+// For example, I have 7POINT1_SURROUND and 5POINT1 declared and the
+// resultant driver exposes both configurations. I can also declare 5POINT1
+// by itself and it will work. However, 7POINT1_SURROUND by itself does
+// not (driver will be incomplete). The same behavior was observed with QUAD.
+// Another issue is that 5POINT1_SURROUND doesn't work.
+// QUESTIONS: Why does this API suck? How do we get 7POINT1_SURROUND by itself?
 static
 KSDATAFORMAT_WAVEFORMATEXTENSIBLE SpeakerHostPinSupportedDeviceFormats[] =
 {
@@ -36,18 +48,119 @@ KSDATAFORMAT_WAVEFORMATEXTENSIBLE SpeakerHostPinSupportedDeviceFormats[] =
 		{
 			{
 				WAVE_FORMAT_EXTENSIBLE,
-				2,
-				44100,
-				176400,
-				4,
-				16,
+				6,			// number of channels
+				44100,		// sample rate
+				6*2*44100,	// channels * bytes * samples
+				6*2,		// channels * bytes
+				16,			// bit depth (actually, container size - real bit depth below)
 				sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX)
 			},
-			16,
-			KSAUDIO_SPEAKER_STEREO,
+			16, // bit depth
+			KSAUDIO_SPEAKER_5POINT1,
 			STATICGUIDOF(KSDATAFORMAT_SUBTYPE_PCM)
 		}
 	},
+	{
+		{
+			sizeof(KSDATAFORMAT_WAVEFORMATEXTENSIBLE),
+			0,
+			0,
+			0,
+			STATICGUIDOF(KSDATAFORMAT_TYPE_AUDIO),
+			STATICGUIDOF(KSDATAFORMAT_SUBTYPE_PCM),
+			STATICGUIDOF(KSDATAFORMAT_SPECIFIER_WAVEFORMATEX)
+		},
+		{
+			{
+				WAVE_FORMAT_EXTENSIBLE,
+				8,			// number of channels
+				44100,		// sample rate
+				8*2*44100,	// channels * bytes * samples
+				8*2,		// channels * bytes
+				16,			// bit depth (actually, container size - real bit depth below)
+				sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX)
+			},
+			16, // bit depth
+			KSAUDIO_SPEAKER_7POINT1_SURROUND,
+			STATICGUIDOF(KSDATAFORMAT_SUBTYPE_PCM)
+		}
+	},
+	// NOTE(will): Other working configs that I have found
+	//{
+	//	{
+	//		sizeof(KSDATAFORMAT_WAVEFORMATEXTENSIBLE),
+	//		0,
+	//		0,
+	//		0,
+	//		STATICGUIDOF(KSDATAFORMAT_TYPE_AUDIO),
+	//		STATICGUIDOF(KSDATAFORMAT_SUBTYPE_PCM),
+	//		STATICGUIDOF(KSDATAFORMAT_SPECIFIER_WAVEFORMATEX)
+	//	},
+	//	{
+	//		{
+	//			WAVE_FORMAT_EXTENSIBLE,
+	//			2,			// number of channels
+	//			44100,		// sample rate
+	//			2*2*44100,	// channels * bytes * samples
+	//			2*2,		// channels * bytes
+	//			16,			// bit depth (actually, container size - real bit depth below)
+	//			sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX)
+	//		},
+	//		16, // bit depth
+	//		KSAUDIO_SPEAKER_STEREO,
+	//		STATICGUIDOF(KSDATAFORMAT_SUBTYPE_PCM)
+	//	}
+	//},
+	//{
+	//	{
+	//		sizeof(KSDATAFORMAT_WAVEFORMATEXTENSIBLE),
+	//		0,
+	//		0,
+	//		0,
+	//		STATICGUIDOF(KSDATAFORMAT_TYPE_AUDIO),
+	//		STATICGUIDOF(KSDATAFORMAT_SUBTYPE_PCM),
+	//		STATICGUIDOF(KSDATAFORMAT_SPECIFIER_WAVEFORMATEX)
+	//	},
+	//	{
+	//		{
+	//			WAVE_FORMAT_EXTENSIBLE,
+	//			4,			// number of channels
+	//			44100,		// sample rate
+	//			4*2*44100,	// channels * bytes * samples
+	//			4*2,		// channels * bytes
+	//			16,			// bit depth (actually, container size - real bit depth below)
+	//			sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX)
+	//		},
+	//		16, // bit depth
+	//		KSAUDIO_SPEAKER_QUAD,
+	//		STATICGUIDOF(KSDATAFORMAT_SUBTYPE_PCM)
+	//	}
+	//},
+	//{
+	//	{
+	//		sizeof(KSDATAFORMAT_WAVEFORMATEXTENSIBLE),
+	//		0,
+	//		0,
+	//		0,
+	//		STATICGUIDOF(KSDATAFORMAT_TYPE_AUDIO),
+	//		STATICGUIDOF(KSDATAFORMAT_SUBTYPE_PCM),
+	//		STATICGUIDOF(KSDATAFORMAT_SPECIFIER_WAVEFORMATEX)
+	//	},
+	//	{
+	//		{
+	//			WAVE_FORMAT_EXTENSIBLE,
+	//			4,			// number of channels
+	//			44100,		// sample rate
+	//			4*2*44100,	// channels * bytes * samples
+	//			4*2,		// channels * bytes
+	//			16,			// bit depth (actually, container size - real bit depth below)
+	//			sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX)
+	//		},
+	//		16, // bit depth
+	//		KSAUDIO_SPEAKER_SURROUND,
+	//		STATICGUIDOF(KSDATAFORMAT_SUBTYPE_PCM)
+	//	}
+	//},
 };
 
 static
