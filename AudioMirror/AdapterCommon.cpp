@@ -109,7 +109,10 @@ NTSTATUS __stdcall AdapterCommon::Init(IRP* StartupIrp, PDEVICE_OBJECT DeviceObj
 	if (NT_SUCCESS(ntStatus))
 	{
 		ntStatus = PcGetPhysicalDeviceObject(DeviceObject, &m_pPhysicalDeviceObject);
-		if (!NT_SUCCESS(ntStatus)) DPF(D_TERSE, ("PcGetPhysicalDeviceObject failed, 0x%x", ntStatus));
+		if (!NT_SUCCESS(ntStatus))
+		{
+			DPF(D_TERSE, ("PcGetPhysicalDeviceObject failed, 0x%x", ntStatus));
+		}
 	}
 
 	ntStatus = InstallVirtualCable(StartupIrp);
