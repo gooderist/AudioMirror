@@ -1,0 +1,1 @@
+.\devcon.exe install x64\Release\AudioMirror\AudioMirror.inf Root\AudioMirror
