@@ -131,19 +131,21 @@ NTSTATUS __stdcall AdapterCommon::Init(IRP* StartupIrp, PDEVICE_OBJECT DeviceObj
 NTSTATUS AdapterCommon::InstallVirtualCable(IRP * irp)
 {
 	NTSTATUS ntStatus = STATUS_SUCCESS;
-	IUnknown* unknownMic;
+
+	// NOTE(will): from JC's notes - disable mic from here
+	// IUnknown* unknownMic;
 	IUnknown* unknownSpeaker;
 
-	ntStatus = InstallVirtualMic(irp, &unknownMic);
-	IF_FAILED_ACTION_RETURN(ntStatus, DPF(D_TERSE, ("InstallVirtualMic failed, 0x%x", ntStatus)));
+	//ntStatus = InstallVirtualMic(irp, &unknownMic);
+	//IF_FAILED_ACTION_RETURN(ntStatus, DPF(D_TERSE, ("InstallVirtualMic failed, 0x%x", ntStatus)));
 	ntStatus = InstallVirtualSpeaker(irp, &unknownSpeaker);
 	IF_FAILED_ACTION_RETURN(ntStatus, DPF(D_TERSE, ("InstallVirtualSpeaker failed, 0x%x", ntStatus)));
 
-	MiniportWaveRT* microphone;
-	ntStatus = unknownMic->QueryInterface(IID_MiniportWaveRT, (PVOID*)&microphone);
+	//MiniportWaveRT* microphone;
+	//ntStatus = unknownMic->QueryInterface(IID_MiniportWaveRT, (PVOID*)&microphone);
 	MiniportWaveRT* speaker;
 	ntStatus = unknownSpeaker->QueryInterface(IID_MiniportWaveRT, (PVOID*)&speaker);
-	microphone->SetPairedMiniport(speaker);
+	//microphone->SetPairedMiniport(speaker);
 
 	return STATUS_SUCCESS;
 }

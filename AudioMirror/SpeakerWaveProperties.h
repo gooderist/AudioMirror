@@ -35,6 +35,8 @@
 static
 KSDATAFORMAT_WAVEFORMATEXTENSIBLE SpeakerHostPinSupportedDeviceFormats[] =
 {
+	// NOTE(will): Would like to remove the following 5.1 config
+	// without breaking the driver
 	{
 		{
 			sizeof(KSDATAFORMAT_WAVEFORMATEXTENSIBLE),
@@ -60,6 +62,8 @@ KSDATAFORMAT_WAVEFORMATEXTENSIBLE SpeakerHostPinSupportedDeviceFormats[] =
 			STATICGUIDOF(KSDATAFORMAT_SUBTYPE_PCM)
 		}
 	},
+
+	// NOTE(will): Would like to only expose the following 7.1 config
 	{
 		{
 			sizeof(KSDATAFORMAT_WAVEFORMATEXTENSIBLE),
@@ -85,6 +89,8 @@ KSDATAFORMAT_WAVEFORMATEXTENSIBLE SpeakerHostPinSupportedDeviceFormats[] =
 			STATICGUIDOF(KSDATAFORMAT_SUBTYPE_PCM)
 		}
 	},
+
+
 	// NOTE(will): Other working configs that I have found
 	//{
 	//	{
